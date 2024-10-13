@@ -7,7 +7,8 @@ on:
     - cron: '*/5 * * * *'  # Run every 5 minutes
 
 jobs:
-  handle-issue:
+  assign_issue:
+    if: github.event_name == 'issue_comment'
     runs-on: ubuntu-latest
     steps:
       - name: Check for /assign-me comment
@@ -25,6 +26,9 @@ jobs:
               });
             }
 
+  unassign_stale:
+    runs-on: ubuntu-latest
+    steps:
       - name: Unassign stale issues
         uses: actions/stale@v4
         with:
