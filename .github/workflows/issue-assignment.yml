@@ -24,9 +24,9 @@ jobs:
             const comment = context.payload.comment.body;
             if (comment.includes('/assign-me')) {
               const issue_number = context.issue.number;
-              const totalDays = ${{ env.DAYS_UNTIL_STALE }};
-              const assignedLabel = ${{ env.ASSIGNED_LABEL }};
-              const pinnedLabel = ${{ env.PINNED_LABEL }};
+              const totalDays = process.env.DAYS_UNTIL_STALE;
+              const assignedLabel = process.env.ASSIGNED_LABEL;
+              const pinnedLabel = process.env.PINNED_LABEL;
 
               // Assign the issue to the user who commented
               await github.rest.issues.addAssignees({
@@ -45,10 +45,9 @@ jobs:
               });
 
               // Add the custom comment
-              const message = `👋 Hey @${context.actor}, thanks for your interest in this issue! 🎉
-              ⚠ Note that this issue will become unassigned if it isn't closed within **${totalDays} days**.
-
-              🔧 A maintainer can also add the **${pinnedLabel}** label to prevent it from being unassigned automatically.`;
+              const message = `👋 Hey @${context.actor}, thanks for your interest in this issue! 🎉\n\n`
+                + `⚠ Note that this issue will become unassigned if it isn't closed within **${totalDays} days**.\n\n`
+                + `🔧 A maintainer can also add the **${pinnedLabel}** label to prevent it from being unassigned automatically.`;
 
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -82,8 +81,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const assignedLabel = '${{ env.ASSIGNED_LABEL }}';
-            const staleLabel = '${{ env.STALE_LABEL }}';
+            const assignedLabel = process.env.ASSIGNED_LABEL;
+            const staleLabel = process.env.STALE_LABEL;
 
             const staleIssues = await github.paginate(github.rest.issues.listForRepo, {
               owner,
