@@ -18,11 +18,21 @@ jobs:
             const comment = context.payload.comment.body;
             if (comment.includes('/assign-me')) {
               const issue_number = context.issue.number;
+
+              // Assign the issue to the user who commented
               await github.rest.issues.addAssignees({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue_number,
                 assignees: [context.actor]
+              });
+
+              // Add the '📍 Assigned' label to the issue
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue_number,
+                labels: ['📍 Assigned']
               });
             }
 
@@ -39,3 +49,9 @@ jobs:
           remove-stale-when-updated: false
           only-labels: '📍 Assigned'
           operations-per-run: 30
+      - name: Unassign contributor after days of inactivity
+        uses: BoundfoxStudios/action-unassign-contributor-after-days-of-inactivity@v1.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          labels: 'Stale'
+          labels-to-remove: '📍 Assigned,Stale'
