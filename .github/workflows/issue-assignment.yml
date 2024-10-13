@@ -4,10 +4,10 @@ on:
   issue_comment:
     types: [created]
   schedule:
-    - cron: "*/5 * * * *" # Run every 5 minutes
+    - cron: "30 9/21 * * *" # Run at 9:30 AM and 9:30 PM UTC
 
 env:
-  DAYS_UNTIL_STALE: 0.003472 # Approximately 5 minutes (for testing)
+  DAYS_UNTIL_STALE: 1 # Approximately 1 day
   ASSIGNED_LABEL: "📍 Assigned"
   PINNED_LABEL: "📌 Pinned"
   STALE_LABEL: "Stale"
@@ -42,7 +42,6 @@ jobs:
                 const issue = await github.rest.issues.get({ owner, repo, issue_number });
 
                 if (issue.data.assignees.length === 0) {
-
                   // Issue is not assigned, proceed with assignment
                   await github.rest.issues.addAssignees({ owner, repo, issue_number, assignees: [context.actor] });
 
