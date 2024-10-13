@@ -45,27 +45,27 @@ jobs:
 
                   // Issue is not assigned, proceed with assignment
                   await github.rest.issues.addAssignees({ owner, repo, issue_number, assignees: [context.actor] });
-              });
 
-              // Add the '📍 Assigned' label to the issue
-              await addLabels([assignedLabel]);
+                  // Add the '📍 Assigned' label to the issue
+                  await addLabels([assignedLabel]);
 
-              // Add the custom comment to notify the user of the assignment
-              const successMessage = `👋 Hey @${context.actor}, thanks for your interest in this issue! 🎉\n\n`
-                + `⚠ Note that this issue will become unassigned if it isn't closed within **${totalDays} days**.\n\n`
-                + `🔧 A maintainer can also add the **${pinnedLabel}** label to prevent it from being unassigned automatically.`;
+                  // Add the custom comment to notify the user of the assignment
+                  const successMessage = `👋 Hey @${context.actor}, thanks for your interest in this issue! 🎉\n\n`
+                    + `⚠ Note that this issue will become unassigned if it isn't closed within **${totalDays} days**.\n\n`
+                    + `🔧 A maintainer can also add the **${pinnedLabel}** label to prevent it from being unassigned automatically.`;
 
-                await addComment(successMessage);
-                console.log(`Assigned issue #${issue_number} to ${context.actor}`);
-              } else {
-                // Issue is already assigned
-                const currentAssignee = issue.data.assignees[0].login;
-                const alreadyAssignedMessage = `👋 Hey @${context.actor}, this issue is already assigned to @${currentAssignee}.\n`
-                  + `⚠️ It will become unassigned if it isn't closed within **${totalDays} days**.\n\n`
-                  + `🔧 A maintainer can also add you to the list of assignees or swap you with the current assignee.`;
+                  await addComment(successMessage);
+                  console.log(`Assigned issue #${issue_number} to ${context.actor}`);
+                } else {
+                  // Issue is already assigned
+                  const currentAssignee = issue.data.assignees[0].login;
+                  const alreadyAssignedMessage = `👋 Hey @${context.actor}, this issue is already assigned to @${currentAssignee}.\n`
+                    + `⚠️ It will become unassigned if it isn't closed within **${totalDays} days**.\n\n`
+                    + `🔧 A maintainer can also add you to the list of assignees or swap you with the current assignee.`;
 
-                await addComment(alreadyAssignedMessage);
-                console.log(`Failed to assign issue #${issue_number} to ${context.actor} as it's already assigned to ${currentAssignee}`);
+                  await addComment(alreadyAssignedMessage);
+                  console.log(`Failed to assign issue #${issue_number} to ${context.actor} as it's already assigned to ${currentAssignee}`);
+                }
               } catch (error) {
                 console.error(`Error assigning issue #${issue_number}: ${error.message}`);
               }
