@@ -39,7 +39,7 @@ jobs:
   unassign_stale:
     runs-on: ubuntu-latest
     steps:
-      - name: Unassign stale issues
+      - name: Mark stale issues
         uses: actions/stale@v4
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -49,10 +49,35 @@ jobs:
           remove-stale-when-updated: false
           only-labels: '📍 Assigned'
           operations-per-run: 30
-      - name: Unassign contributor after days of inactivity
-        uses: BoundfoxStudios/action-unassign-contributor-after-days-of-inactivity@v1.0.2
+      - name: Unassign stale issues
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          last-activity: 0.003472
-          labels: 'Stale'
-          labels-to-remove: '📍 Assigned,Stale'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            
+              const staleIssues = await github.paginate(github.rest.issues.listForRepo, {
+                owner,
+                repo,
+                state: 'open',
+                labels: 'Stale',
+                assignee: '*'
+              });
+              
+              for (const issue of staleIssues) {
+                await github.rest.issues.removeAssignees({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  assignees: issue.assignees.map(a => a.login)
+                });
+                
+                await github.rest.issues.createComment({
+                  owner,
+                  repo,
+                  issue_number: issue.number,
+                  body: 'This issue has been automatically unassigned due to inactivity.'
+                });
+                
+                console.log(`Unassigned issue #${issue.number}`);
+            }   
