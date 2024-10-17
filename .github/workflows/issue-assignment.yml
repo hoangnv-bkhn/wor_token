@@ -4,10 +4,10 @@ on:
   issue_comment:
     types: [created]
   schedule:
-    - cron: "30 9/21 * * *" # Run at 9:30 AM and 9:30 PM UTC
+    - cron: "*/5 * * * *" # Run at 9:30 AM and 9:30 PM UTC
 
 env:
-  DAYS_UNTIL_STALE: 1 # Approximately 1 day
+  DAYS_UNTIL_STALE: 0 # Approximately 1 day
   ASSIGNED_LABEL: "📍 Assigned"
   PINNED_LABEL: "📌 Pinned"
   STALE_LABEL: "Stale"
